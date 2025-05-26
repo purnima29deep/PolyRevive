@@ -12,15 +12,52 @@ import { Link } from 'react-router-dom';
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
+  const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
+
+  // Email login states
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // Phone login states
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
-    // Simulate login process
-    setTimeout(() => {
+
+    try {
+      const endpoint = loginMethod === 'email' ? '/api/login/email' : '/api/login/phone';
+      const payload =
+        loginMethod === 'email'
+          ? { email, password }
+          : { phone, otp };
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Example: Save token to localStorage if needed
+        // localStorage.setItem('token', result.token);
+
+        // Redirect to dashboard
+        window.location.href = '/dashboard';
+      } else {
+        alert(result.message || 'Login failed');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Something went wrong. Please try again.');
+    } finally {
       setIsLoading(false);
-      // Navigate to dashboard
-      window.location.href = '/dashboard';
-    }, 2000);
+    }
   };
 
   return (
@@ -44,7 +81,7 @@ const Login = () => {
           </CardHeader>
           
           <CardContent>
-            <Tabs defaultValue="email" className="w-full">
+            <Tabs defaultValue="email" className="w-full" onValueChange={(value) => setLoginMethod(value as 'email' | 'phone')}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="email">Email</TabsTrigger>
                 <TabsTrigger value="phone">Phone</TabsTrigger>
@@ -62,6 +99,8 @@ const Login = () => {
                         placeholder="Enter your email"
                         className="pl-10"
                         required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                   </div>
@@ -76,6 +115,8 @@ const Login = () => {
                         placeholder="Enter your password"
                         className="pl-10"
                         required
+                         value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
                   </div>
@@ -102,6 +143,8 @@ const Login = () => {
                         placeholder="+1 (555) 123-4567"
                         className="pl-10"
                         required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                       />
                     </div>
                   </div>
@@ -113,6 +156,8 @@ const Login = () => {
                       type="text"
                       placeholder="Enter 6-digit code"
                       maxLength={6}
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
                     />
                   </div>
                   

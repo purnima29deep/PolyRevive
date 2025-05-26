@@ -11,22 +11,66 @@ import { Recycle, Mail, Phone, User, Lock, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Signup = () => {
+  const [tab, setTab] = useState<'email' | 'phone'>('email');
   const [isLoading, setIsLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
 
+  // Shared
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [address, setAddress] = useState('');
+
+  // Email-specific
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Phone-specific
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [otp, setOtp] = useState('');
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
     if (!acceptTerms) {
       alert('Please accept the terms and conditions to continue.');
       return;
     }
+
+    if (tab === 'email' && password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+
     setIsLoading(true);
-    // Simulate signup process
-    setTimeout(() => {
+
+    const payload =
+      tab === 'email'
+        ? { firstName, lastName, address, email, password }
+        : { firstName, lastName, address, phone: phoneNumber, otp };
+
+    const endpoint = tab === 'email' ? '/api/signup/email' : '/api/signup/phone';
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        window.location.href = '/dashboard';
+      } else {
+        alert(data.message || 'Signup failed');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred. Please try again.');
+    } finally {
       setIsLoading(false);
-      // Navigate to dashboard
-      window.location.href = '/dashboard';
-    }, 2000);
+    }
   };
 
   return (
@@ -50,7 +94,7 @@ const Signup = () => {
           </CardHeader>
           
           <CardContent>
-            <Tabs defaultValue="email" className="w-full">
+            <Tabs defaultValue="email" className="w-full" value={tab} onValueChange={(val) => setTab(val as 'email' | 'phone')}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="email">Email</TabsTrigger>
                 <TabsTrigger value="phone">Phone</TabsTrigger>
@@ -69,6 +113,7 @@ const Signup = () => {
                           placeholder="John"
                           className="pl-10"
                           required
+                          value={firstName} onChange={(e) => setFirstName(e.target.value)}
                         />
                       </div>
                     </div>
@@ -79,6 +124,7 @@ const Signup = () => {
                         type="text"
                         placeholder="Doe"
                         required
+                        value={lastName} onChange={(e) => setLastName(e.target.value)}
                       />
                     </div>
                   </div>
@@ -93,6 +139,7 @@ const Signup = () => {
                         placeholder="john@example.com"
                         className="pl-10"
                         required
+                        value={email} onChange={(e) => setEmail(e.target.value)} 
                       />
                     </div>
                   </div>
@@ -107,6 +154,7 @@ const Signup = () => {
                         placeholder="Your pickup address"
                         className="pl-10"
                         required
+                        value={address} onChange={(e) => setAddress(e.target.value)}
                       />
                     </div>
                   </div>
@@ -121,6 +169,7 @@ const Signup = () => {
                         placeholder="Create a strong password"
                         className="pl-10"
                         required
+                        value={password} onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
                   </div>
@@ -135,6 +184,7 @@ const Signup = () => {
                         placeholder="Confirm your password"
                         className="pl-10"
                         required
+                        value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
                       />
                     </div>
                   </div>
@@ -180,6 +230,7 @@ const Signup = () => {
                           placeholder="John"
                           className="pl-10"
                           required
+                          value={firstName} onChange={(e) => setFirstName(e.target.value)}
                         />
                       </div>
                     </div>
@@ -190,6 +241,7 @@ const Signup = () => {
                         type="text"
                         placeholder="Doe"
                         required
+                         value={lastName} onChange={(e) => setLastName(e.target.value)}
                       />
                     </div>
                   </div>
@@ -204,6 +256,7 @@ const Signup = () => {
                         placeholder="+1 (555) 123-4567"
                         className="pl-10"
                         required
+                        value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}
                       />
                     </div>
                   </div>
@@ -218,6 +271,7 @@ const Signup = () => {
                         placeholder="Your pickup address"
                         className="pl-10"
                         required
+                        value={address} onChange={(e) => setAddress(e.target.value)}
                       />
                     </div>
                   </div>
@@ -229,6 +283,7 @@ const Signup = () => {
                       type="text"
                       placeholder="Enter 6-digit code"
                       maxLength={6}
+                      value={otp} onChange={(e) => setOtp(e.target.value)}
                     />
                   </div>
 
