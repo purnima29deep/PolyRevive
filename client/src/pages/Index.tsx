@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -90,7 +89,7 @@ const Index = () => {
                 <Badge className="bg-green-100 text-green-700 hover:bg-green-200 px-4 py-2">
                   🌱 Circular Economy Platform
                 </Badge>
-                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                <h1 className="text-5xl lg:text-5xl font-bold text-gray-900 leading-tight">
                   Transform 
                   <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent"> Plastic Waste </span>
                   Into a Better Future
@@ -127,29 +126,11 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-green-100 to-blue-100 rounded-3xl flex items-center justify-center relative overflow-hidden shadow-2xl">
+            <div className="relative w-100 h-100">
+              <div className=" bg-gradient-to-br from-green-70 to-blue-700 rounded-7xl flex items-center justify-center relative overflow-hidden shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-br from-green-200/20 to-blue-200/20"></div>
                 <div className="relative z-10 text-center">
-                  <div className="w-40 h-40 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-                    <Recycle className="h-20 w-20 text-white" />
-                  </div>
-                  <h3 className="text-3xl font-bold text-gray-800 mb-3">2,847+ Members</h3>
-                  <p className="text-gray-600 text-lg">Already making an impact</p>
-                </div>
-                
-                {/* Floating elements */}
-                <div className="absolute top-8 right-8 bg-white rounded-xl p-4 shadow-xl">
-                  <div className="flex items-center gap-3">
-                    <Award className="h-6 w-6 text-yellow-500" />
-                    <span className="font-semibold">+50 Points</span>
-                  </div>
-                </div>
-                <div className="absolute bottom-8 left-8 bg-white rounded-xl p-4 shadow-xl">
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-6 w-6 text-green-500" />
-                    <span className="font-semibold">Partner Near</span>
-                  </div>
+                   <img  className="w-full h-full rounded-4xl" src="https://media.istockphoto.com/id/1647919144/video/father-teaching-his-little-girl-to-recycle-plastic-waste-using-correct-garbage-bin-at-a-city.jpg?s=640x640&k=20&c=xo8eG1JqjE5QtMKtYI0oSNwDU9CXLw76m2mGVGOhgQg="></img>
                 </div>
               </div>
             </div>
@@ -340,4 +321,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Index;

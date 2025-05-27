@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -73,9 +72,9 @@ const AppNavbar = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-12 w-12 rounded-full">
                       <Avatar className="h-12 w-12">
-                        <AvatarImage src="/placeholder.svg" alt="User" />
+                        <AvatarImage src="https://tse3.mm.bing.net/th?id=OIP.G0-rgY-iYnZgqF_DiS-_oQHaHa&pid=Api&P=0&h=180" alt="User" />
                         <AvatarFallback className="bg-gradient-to-br from-green-500 to-green-600 text-white text-lg">
-                          AK
+                          AS
                         </AvatarFallback>
                       </Avatar>
                     </Button>
@@ -83,9 +82,9 @@ const AppNavbar = () => {
                   <DropdownMenuContent className="w-56 bg-white" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">Alex Kumar</p>
+                        <p className="text-sm font-medium leading-none">Akshit Saxena</p>
                         <p className="text-xs leading-none text-muted-foreground">
-                          alex@example.com
+                          akshit@gmail.com
                         </p>
                       </div>
                     </DropdownMenuLabel>
@@ -118,4 +117,4 @@ const AppNavbar = () => {
   );
 };
 
-export default AppNavbar;
+export default AppNavbar;
