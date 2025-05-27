@@ -8,24 +8,50 @@ import { Upload, Scan, CheckCircle, XCircle, Recycle, Camera } from 'lucide-reac
 const PlasticSorting = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
-  const handleScan = () => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setScanResult(null); // Clear previous result
+    }
+  };
+
+  const handleScan = async () => {
+    if (!imageFile) {
+      alert("Please upload an image first.");
+      return;
+    }
+
     setIsScanning(true);
-    // Simulate AI scanning process
-    setTimeout(() => {
+
+    const formData = new FormData();
+    formData.append("file", imageFile);
+
+    try {
+      const res = await fetch("http://localhost:8000/classify/", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
       setScanResult({
-        plasticType: 'PET (Polyethylene Terephthalate)',
-        code: '1',
-        recyclable: true,
-        confidence: 95,
-        suggestions: [
-          'Clean the container before recycling',
-          'Remove any labels if possible',
-          'Can be recycled into new bottles or clothing fibers'
+        plasticType: data.type,
+        code: data.code ?? "?", // fallback
+        recyclable: data.recyclable,
+        confidence: data.confidence ?? 90, // optional
+        suggestions: data.suggestions ?? [
+          "Rinse the item before recycling",
+          "Remove labels or caps if possible"
         ]
       });
+    } catch (err) {
+      console.error("Scan failed", err);
+      alert("Failed to scan plastic item.");
+    } finally {
       setIsScanning(false);
-    }, 3000);
+    }
   };
 
   const plasticTypes = [

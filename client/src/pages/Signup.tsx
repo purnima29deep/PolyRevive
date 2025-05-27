@@ -14,7 +14,7 @@ const Signup = () => {
   const [tab, setTab] = useState<'email' | 'phone'>('email');
   const [isLoading, setIsLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
-
+  
   // Shared
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -28,6 +28,36 @@ const Signup = () => {
   // Phone-specific
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+
+const handleSendOtp = async () => {
+    if (!phoneNumber) {
+      alert('Please enter a phone number first.');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phoneNumber }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setOtpSent(true);
+        alert('OTP sent successfully');
+      } else {
+        alert(data.message || 'Failed to send OTP');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred while sending OTP.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -49,7 +79,7 @@ const Signup = () => {
         ? { firstName, lastName, address, email, password }
         : { firstName, lastName, address, phone: phoneNumber, otp };
 
-    const endpoint = tab === 'email' ? '/api/signup/email' : '/api/signup/phone';
+    const endpoint = tab === 'email' ? '/api/auth/signup-email' : '/api/auth/signup-phone';
 
     try {
       const response = await fetch(endpoint, {
@@ -284,6 +314,7 @@ const Signup = () => {
                       placeholder="Enter 6-digit code"
                       maxLength={6}
                       value={otp} onChange={(e) => setOtp(e.target.value)}
+                      disabled={!otpSent}
                     />
                   </div>
 
@@ -304,7 +335,14 @@ const Signup = () => {
                       </Link>
                     </Label>
                   </div>
-                  
+                  <Button
+              type="button"
+              variant="outline"
+              onClick={handleSendOtp}
+              disabled={isLoading || !phoneNumber}
+            >
+              {otpSent ? 'Resend OTP' : 'Send OTP'}
+            </Button>
                   <Button 
                     type="submit" 
                     className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"

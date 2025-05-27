@@ -11,6 +11,8 @@ import { Link } from 'react-router-dom';
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [otpSending, setOtpSending] = useState(false);
+  const [isOtpSent, setIsOtpSent] = useState(false);
 
   const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
 
@@ -22,12 +24,43 @@ const Login = () => {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
 
+  const handleSendOtp = async () => {
+    if (!phone.trim()) return alert("Phone number is required");
+
+    setOtpSending(true);
+    setIsOtpSent(false);
+
+    try {
+      const response = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone: phone.trim() }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('OTP sent successfully!');
+        setIsOtpSent(true);
+      } else {
+        alert(result.message || 'Failed to send OTP');
+      }
+    } catch (error) {
+      console.error('OTP Send Error:', error);
+      alert('Something went wrong while sending OTP.');
+    } finally {
+      setOtpSending(false);
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
 
     try {
-      const endpoint = loginMethod === 'email' ? '/api/login/email' : '/api/login/phone';
+      const endpoint ='/api/auth/login';
       const payload =
         loginMethod === 'email'
           ? { email, password }
@@ -144,22 +177,37 @@ const Login = () => {
                         className="pl-10"
                         required
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => {
+                          setPhone(e.target.value);
+                          setIsOtpSent(false); // Reset if changed
+                        }}
                       />
                     </div>
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="otp">Verification Code</Label>
-                    <Input
-                      id="otp"
-                      type="text"
-                      placeholder="Enter 6-digit code"
-                      maxLength={6}
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                    />
-                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleSendOtp}
+                    className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+                    disabled={otpSending || !phone}
+                  >
+                    {otpSending ? 'Sending OTP...' : 'Send OTP'}
+                  </Button>
+
+                  {isOtpSent && (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="otp">Verification Code</Label>
+                        <Input
+                          id="otp"
+                          type="text"
+                          placeholder="Enter 6-digit code"
+                          maxLength={6}
+                          required
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)}
+                        />
+                      </div>
                   
                   <Button 
                     type="submit" 
@@ -167,7 +215,8 @@ const Login = () => {
                     disabled={isLoading}
                   >
                     {isLoading ? 'Verifying...' : 'Verify & Sign In'}
-                  </Button>
+                  </Button></>
+                  )}
                 </form>
               </TabsContent>
             </Tabs>
